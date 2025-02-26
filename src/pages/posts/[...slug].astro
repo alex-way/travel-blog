@@ -1,14 +1,13 @@
 ---
+import { Image } from "astro:assets";
 import { type CollectionEntry, render } from "astro:content";
+import Footer from "$components/Footer.astro";
+import FormattedDate from "$components/FormattedDate.astro";
+import Header from "$components/Header.astro";
+import Tag from "$components/Tag.astro";
 import BaseLayout from "$layouts/BaseLayout.astro";
 import BlogPost from "$layouts/BlogPost.astro";
-import Header from "$components/Header.astro";
-import Footer from "$components/Footer.astro";
-import { Image } from "astro:assets";
-import FormattedDate from "$components/FormattedDate.astro";
 import { getBlogPosts } from "src/utils";
-import BlueskyLikes from "$components/bluesky/BlueskyLikes.astro";
-import Tag from "$components/Tag.astro";
 import { SHOW_IMAGES } from "../../config.json";
 
 export async function getStaticPaths() {
@@ -23,14 +22,10 @@ type Props = CollectionEntry<"blog">;
 const post = Astro.props;
 const { Content } = await render(post);
 
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/**/*.{jpeg,jpg,png,gif}"
-);
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.{jpeg,jpg,png,gif}");
 const replacedHero = post.data.heroImage?.replace("../..", "/src");
 if (replacedHero && !images[replacedHero])
-  throw new Error(
-    `"${post.data.heroImage}" does not exist in glob: "src/assets/**/*.{jpeg,jpg,png,gif}"`
-  );
+  throw new Error(`"${post.data.heroImage}" does not exist in glob: "src/assets/**/*.{jpeg,jpg,png,gif}"`);
 ---
 
 <BaseLayout {...post.data} image={post.id + ".png"}>
@@ -56,11 +51,6 @@ if (replacedHero && !images[replacedHero])
 
       <h1 class="mt-4">{post.data.title}</h1>
       <Content />
-
-      <BlueskyLikes
-        disableLikes={post.data.disableLikes}
-        disableComments={post.data.disableComments}
-      />
     </BlogPost>
   </main>
   <Footer />
